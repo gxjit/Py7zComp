@@ -28,6 +28,8 @@ def parseArgs():
                         help="Directory path", type=dirPath)
     parser.add_argument("-s", "--split", action="store_true",
                         help="Split output in multiple files")
+    parser.add_argument("-a", "--abs", action="store_true",
+                        help="Use absolute 7z.exe path")
     pargs = parser.parse_args()
 
     return pargs
@@ -51,6 +53,7 @@ def main(pargs):
         filestr = str(folder)
         cmd = ["7z.exe", "a", f"{ filestr }.zip", filestr]
         if totalSize > 314572800 and pargs.split: cmd.append("-v300m")
+        if pargs.abs: cmd[0] = r"C:\Program Files\7-Zip\7z.exe"
 
         print("--------------------------------------------")
         print(cmd)

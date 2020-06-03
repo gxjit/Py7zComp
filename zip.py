@@ -1,5 +1,3 @@
-
-
 # Copyright (c) 2019 Gurjit Singh
 
 # This source code is licensed under the MIT license that can be found in
@@ -14,7 +12,6 @@ import argparse
 
 
 def parseArgs():
-
     def dirPath(pth):
         pthObj = pathlib.Path(pth)
         if pthObj.is_dir():
@@ -22,14 +19,17 @@ def parseArgs():
         else:
             raise argparse.ArgumentTypeError("Invalid Directory path")
 
-    parser = argparse.ArgumentParser(description="Compress all child \
-                                     directories in specified folder.")
-    parser.add_argument("dir", metavar="DirPath",
-                        help="Directory path", type=dirPath)
-    parser.add_argument("-s", "--split", action="store_true",
-                        help="Split output in multiple files")
-    parser.add_argument("-a", "--abs", action="store_true",
-                        help="Use absolute 7z.exe path")
+    parser = argparse.ArgumentParser(
+        description="Compress all child \
+                                     directories in specified folder."
+    )
+    parser.add_argument("dir", metavar="DirPath", help="Directory path", type=dirPath)
+    parser.add_argument(
+        "-s", "--split", action="store_true", help="Split output in multiple files"
+    )
+    parser.add_argument(
+        "-a", "--abs", action="store_true", help="Use absolute 7z.exe path"
+    )
     pargs = parser.parse_args()
 
     return pargs
@@ -52,8 +52,10 @@ def main(pargs):
                 totalSize += os.stat(os.path.join(childpath, file)).st_size
         filestr = str(folder)
         cmd = ["7z.exe", "a", f"{ filestr }.zip", filestr]
-        if totalSize > 314572800 and pargs.split: cmd.append("-v300m")
-        if pargs.abs: cmd[0] = r"C:\Program Files\7-Zip\7z.exe"
+        if totalSize > 314572800 and pargs.split:
+            cmd.append("-v300m")
+        if pargs.abs:
+            cmd[0] = r"C:\Program Files\7-Zip\7z.exe"
 
         print("--------------------------------------------")
         print(cmd)

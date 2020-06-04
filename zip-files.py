@@ -19,24 +19,20 @@ def parseArgs():
         else:
             raise argparse.ArgumentTypeError("Invalid Directory path")
 
-    def splitInt(split):
-        if split == "d":
-            return 300
-        else:
-            try:
-                return int(split)
-            except TypeError:
-                raise argparse.ArgumentTypeError("Invalid Split value")
-
     parser = argparse.ArgumentParser(
         description="Compress all files in a specified folder using 7z."
     )
-    parser.add_argument("dir", metavar="DirPath", help="Directory path", type=dirPath)
+    parser.add_argument(
+        "-d", "--dir", required=True, help="Directory path", type=dirPath
+    )
     parser.add_argument(
         "-s",
         "--split",
-        type=splitInt,
-        help="Split results in specified MB value, use d for default value 300",
+        nargs="?",
+        default=None,
+        const=300,
+        type=int,
+        help="Maximum split size in MB, default is 300 MB",
     )
     parser.add_argument(
         "-a",
@@ -74,6 +70,13 @@ def getSize(totalSize, maxSplit):
         raise Exception("file size either too small or too big")
 
 
+def getFileSizes(fileList):
+    totalSize = 0
+    for file in fileList:
+        totalSize += file.stat().st_size
+    return totalSize
+
+
 def main(pargs):
 
     dirPath = pargs.dir.resolve()
@@ -84,9 +87,7 @@ def main(pargs):
         print("Nothing to do.")
         sys.exit()
 
-    totalSize = 0
-    for file in fileList:
-        totalSize += file.stat().st_size
+    totalSize = getFileSizes(fileList)
 
     cmd = getCmd(dirPath, pargs.abs)
 
@@ -105,4 +106,3 @@ def main(pargs):
 
 
 main(parseArgs())
-

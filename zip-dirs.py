@@ -36,6 +36,15 @@ def parseArgs():
         help="Maximum split size in MB, default is 300 MB",
     )
     parser.add_argument(
+        "-m",
+        "--minim-split",
+        nargs="?",
+        default=None,
+        const=100,
+        type=int,
+        help="Minimum split size in MB, default is 100 MB",
+    )
+    parser.add_argument(
         "-a",
         "--abs",
         action="store_true",
@@ -89,21 +98,22 @@ def main(pargs):
         print("Nothing to do.")
         sys.exit()
 
-    splitAboveMB = 50
+    minimSplit = pargs.minim_split
 
     for folder in dirList:
         totalSize = bytesToMB(getDirSize(folder))
 
         cmd = getCmd(folder, pargs.abs)
 
-        if pargs.split and totalSize > splitAboveMB:
+        if pargs.split and totalSize >= (minimSplit * 2):
             splitSize = getSize(totalSize, pargs.split)[1]
-            cmd.append(f"-v{splitSize}m")
+            if splitSize >= minimSplit:
+                cmd.append(f"-v{splitSize}m")
 
         print("\n--------------------------------------")
         print("\n", cmd)
         print(f"\nTotal size of source files { (totalSize) } MB")
-        if pargs.split and totalSize > splitAboveMB:
+        if pargs.split and totalSize >= (minimSplit * 2):
             print(f"\nSplit size: {splitSize} MB")
         print("\n---------------------------------------\n")
         subprocess.run(cmd)

@@ -39,8 +39,8 @@ def parseArgs():
         "-m",
         "--minim-split",
         nargs="?",
-        default=None,
-        const=100,
+        default=100,
+        # const=100,
         type=int,
         help="Minimum split size in MB, default is 100 MB",
     )

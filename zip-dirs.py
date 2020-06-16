@@ -6,10 +6,10 @@
 
 import argparse
 import math
+import os
 import pathlib
 import subprocess
 import sys
-import os
 
 
 def parseArgs():
@@ -50,6 +50,9 @@ def parseArgs():
         action="store_true",
         help=r"Use absolute 7z.exe path C:\Program Files\7-Zip\7z.exe",
     )
+    parser.add_argument(
+        "-p", "--parent", action="store_true", help=r"Compress parent directory.",
+    )
     pargs = parser.parse_args()
 
     return pargs
@@ -58,6 +61,9 @@ def parseArgs():
 getCmd = lambda dirPath, abs: [
     "7z.exe" if not abs else r"C:\Program Files\7-Zip\7z.exe",
     "a",
+    # "-t7z",
+    # "-mx7",
+    # "-mnt4",
     f"{str(dirPath)}.zip",
     str(dirPath),
 ]
@@ -91,8 +97,10 @@ def getDirSize(dirPath):
 def main(pargs):
 
     dirPath = pargs.dir.resolve()
-
-    dirList = getDirList(dirPath)
+    if not pargs.parent:
+        dirList = getDirList(dirPath)
+    else:
+        dirList = [str(dirPath)]
 
     if not dirList:
         print("Nothing to do.")
